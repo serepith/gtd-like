@@ -1,4 +1,4 @@
-//AI WROTE THIS
+//AI WROTE THIS 
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { auth, db } from '../lib/firebase';
