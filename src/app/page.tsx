@@ -1,4 +1,6 @@
 import Image from "next/image";
+import * as React from "react";
+import { Popover } from "radix-ui";
 
 export default function Home() {
   return (

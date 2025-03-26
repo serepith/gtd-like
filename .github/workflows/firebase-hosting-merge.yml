@@ -37,7 +37,6 @@ jobs:
       - name: Debug - List node_modules
         run: ls -la node_modules/.bin/next
 
-      
       - run: npm run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
