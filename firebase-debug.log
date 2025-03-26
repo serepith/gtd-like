@@ -1,0 +1,27 @@
+[debug] [2025-03-26T02:38:07.440Z] ----------------------------------------------------------------------
+[debug] [2025-03-26T02:38:07.449Z] Command:       /home/serepith/.nvm/versions/node/v22.14.0/bin/node /home/serepith/.nvm/versions/node/v22.14.0/bin/firebase apps:sdkconfig WEB gtd-like
+[debug] [2025-03-26T02:38:07.449Z] CLI Version:   13.35.1
+[debug] [2025-03-26T02:38:07.450Z] Platform:      linux
+[debug] [2025-03-26T02:38:07.450Z] Node Version:  v22.14.0
+[debug] [2025-03-26T02:38:07.450Z] Time:          Tue Mar 25 2025 22:38:07 GMT-0400 (Eastern Daylight Time)
+[debug] [2025-03-26T02:38:07.450Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-03-26T02:38:07.650Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-03-26T02:38:07.650Z] > authorizing via signed-in user (catsskifast@gmail.com)
+[debug] [2025-03-26T02:38:07.654Z] Checked if tokens are valid: false, expires at: 1742955786529
+[debug] [2025-03-26T02:38:07.654Z] Checked if tokens are valid: false, expires at: 1742955786529
+[debug] [2025-03-26T02:38:07.654Z] > refreshing access token with scopes: []
+[debug] [2025-03-26T02:38:07.656Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-03-26T02:38:07.656Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-03-26T02:38:07.932Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-03-26T02:38:07.932Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-03-26T02:38:07.947Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/-/webApps/gtd-like/config [none]
+[debug] [2025-03-26T02:38:08.193Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/-/webApps/gtd-like/config 400
+[debug] [2025-03-26T02:38:08.194Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/-/webApps/gtd-like/config {"error":{"code":400,"message":"Request contains an invalid argument.","status":"INVALID_ARGUMENT"}}
+[debug] [2025-03-26T02:38:08.194Z] Request to https://firebase.googleapis.com/v1beta1/projects/-/webApps/gtd-like/config had HTTP Error: 400, Request contains an invalid argument.
+[debug] [2025-03-26T02:38:08.337Z] FirebaseError: Request to https://firebase.googleapis.com/v1beta1/projects/-/webApps/gtd-like/config had HTTP Error: 400, Request contains an invalid argument.
+    at responseToError (/home/serepith/.nvm/versions/node/v22.14.0/lib/node_modules/firebase-tools/lib/responseToError.js:52:12)
+    at RetryOperation._fn (/home/serepith/.nvm/versions/node/v22.14.0/lib/node_modules/firebase-tools/lib/apiv2.js:312:77)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[error] 
+[error] Error: Failed to get WEB app configuration. See firebase-debug.log for more info.
