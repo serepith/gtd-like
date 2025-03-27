@@ -24,6 +24,7 @@
 .DS_Store
 *.pem
 structue
+data-structure-concept.md
 
 # debug
 npm-debug.log*

@@ -10,6 +10,9 @@
   },
   "dependencies": {
     "@tailwindcss/cli": "^4.0.17",
+    "@tanstack/query-sync-storage-persister": "^5.69.0",
+    "@tanstack/react-query": "^5.69.0",
+    "@tanstack/react-query-persist-client": "^5.69.0",
     "firebase": "^11.5.0",
     "next": "^15.2.4",
     "postcss": "^8.5.3",
