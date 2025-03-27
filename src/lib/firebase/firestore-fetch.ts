@@ -6,21 +6,6 @@ import { getFirebaseAuth } from './firebase-functions';
 import { Task } from '../models/Task';
 import { QueryFunctionContext } from '@tanstack/react-query';
 
-// Adding a task
-export async function addTask(taskData: String) {
-  const userId = getCurrentUserId();
-  if (!userId) throw new Error("User not authenticated");
-
-  const db = getFirebaseFirestore();
-
-  return await addDoc(collection(db, 'tasks'), {
-    content: taskData,
-    userId: userId,
-    completed: false,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  });
-};
 
 // Get current user ID (safely)
 export function getCurrentUserId(): string | null {

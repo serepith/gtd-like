@@ -1,3 +1,5 @@
+//Wrapper component class for collections (Firestore) aka repositories
+
 'use client';
 
 import React, { createContext, useContext } from 'react';

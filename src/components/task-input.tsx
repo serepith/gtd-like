@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { addTask } from '../lib/firebase/firestore-fetch';
+import { useTasks } from '@/app/hooks/use-tasks';
 
 export default function TextInput() {
   const [text, setText] = useState('');
+  const { tasks, addTask  } = useTasks();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -12,7 +13,7 @@ export default function TextInput() {
 
     try {
         setText('');
-        const id = await addTask(text);
+        addTask({content: text});
     } catch (error) {
       setText(`Error: ${(error as Error).message}`);
     }

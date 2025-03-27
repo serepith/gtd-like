@@ -8,9 +8,10 @@ import { fetchTasks } from '../lib/firebase/firestore-fetch';
 import { useAuth } from '@/app/providers/firebase-auth-provider';
 import { Task } from '../lib/models/Task';
 import { useTasks } from '@/app/hooks/use-tasks';
+import TaskItemEdit from './task-edit';
 
 export default function TasksClient() {
-  const { data: tasks, isLoading, error } = useTasks();
+  const { tasks, isLoading, error, updateTask, deleteTask } = useTasks();
   
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading tasks</div>;
@@ -18,10 +19,12 @@ export default function TasksClient() {
   return (
     <ul className="space-y-2">
       {tasks?.map((task) => (
-        <li key={task.taskId} className="p-3 border rounded">
-          <h3 className="font-medium">{task.content}</h3>
-          {task.notes && <p className="text-sm">{task.notes}</p>}
-        </li>
+          <TaskItemEdit
+            key={task.taskId}
+            task={task}
+            onUpdate={(taskId, updates) => updateTask({ taskId, updates })}
+            onDelete={(taskId) => deleteTask(taskId)}
+          />
       ))}
     </ul>
   );
