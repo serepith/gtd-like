@@ -6,4 +6,6 @@ export interface Task {
   updatedAt: Date;
   taskId: string;
   userId: string;
+  tagIds: string[]; // Array of tag IDs
+  dueDate?: Date; // Optional due date
 }

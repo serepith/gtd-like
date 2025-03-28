@@ -1,6 +1,7 @@
 //AI WROTE THIS
 
 import { Task } from '../models/Task';
+import { Tag } from '../models/Tag';
 import { DocumentData, QueryDocumentSnapshot } from 'firebase/firestore';
 
 export const taskConverter = {
@@ -21,7 +22,30 @@ export const taskConverter = {
       userId: data.userId,
       completed: Boolean(data.completed),
       createdAt: data.createdAt?.toDate() || new Date(),
-      updatedAt: data.updatedAt?.toDate() || new Date()
+      updatedAt: data.updatedAt?.toDate() || new Date(),
+      tagIds: data.tagIds || [],
+      dueDate: data.dueDate ? data.dueDate.toDate() : undefined,
+    };
+  }
+};
+
+export const tagConverter = {
+  toFirestore(tag: Partial<Tag>): DocumentData {
+    // Omit taskId - it's stored as document ID
+    const { tagId, ...data } = tag;
+    return data;
+  },
+  fromFirestore(
+    snapshot: QueryDocumentSnapshot
+  ): Tag {
+    const data = snapshot.data();
+    
+    return {
+      tagId: snapshot.id,
+      content: data.content || '',
+      userId: data.userId,
+      createdAt: data.createdAt?.toDate() || new Date(),
+      updatedAt: data.updatedAt?.toDate() || new Date(),
     };
   }
 };
