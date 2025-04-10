@@ -1,7 +1,7 @@
 //AI WROTE THIS
 // TaskItem.tsx
 import { useEffect, useState } from 'react';
-import { Task } from '../lib/models/Task'; 
+import { Task } from '../../lib/models/Task'; 
 
 interface TaskItemProps {
   task: Task;

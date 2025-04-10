@@ -4,73 +4,73 @@
 
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
-import { db } from '@/lib/firebase/firebase-functions';
+import { db } from "../firebase/client";
 import { TaskRepository } from '@/lib/firebase/TaskRepository';
 import { useQueryClient } from '@tanstack/react-query';
-import { useAuth } from '@/app/providers/firebase-auth-provider';
+import { useRequireAuth } from './use-auth';
 import { useEffect } from 'react';
-import { useRepositories } from '../providers/repository-provider';
+import { useRepositories } from './use-repositories'
 import { Task } from '@/lib/models/Task';
+import { TagRepository } from '@/lib/firebase/TagRepository';
 
-export function useTasks() {
-  const { user } = useAuth();
+// operations without auth
+const useTaskOperations = (userId : string) => {
   const { tasks } = useRepositories();
   const queryClient = useQueryClient();
+  
+  
+  console.log("user? ", userId);
+
+  // The query is still used for initial loading state and error handling
+  const tasksQuery = useQuery({
+    queryKey: ['tasks', userId],
+    queryFn: () => tasks.getTasks(userId),
+    // This prevents unnecessary fetching since we're using real-time updates
+    staleTime: Infinity
+  });
 
   // Set up subscription to real-time updates
   useEffect(() => {
-    if (!user?.uid) return;
-    
     // This is the only place where we reference the subscription
-    const unsubscribe = tasks.onTasksChanged(user.uid, (newTasks) => {
+    const unsubscribe = tasks.onTasksChanged(userId, (newTasks) => {
       // When Firebase pushes new data, update React Query's cache
-      queryClient.setQueryData(['tasks', user?.uid], newTasks);
+      queryClient.setQueryData(['tasks', userId], newTasks);
     });
     
     return () => unsubscribe();
-  }, [user?.uid, queryClient, tasks]);
+  }, [userId, queryClient, tasks]);
 
   // fetch all tasks
 /*   const fetchTasks = async () => {
-    if (!user?.uid) throw new Error("User not authenticated");
-    return tasks.getTasks(user.uid);
+    if (!userId) throw new Error("User not authenticated");
+    return tasks.getTasks(userId);
   }; */
 
- // The query is still used for initial loading state and error handling
- const tasksQuery = useQuery({
-  queryKey: ['tasks', user?.uid],
-  queryFn: () => tasks.getTasks(user?.uid ?? ''),
-  enabled: !!user?.uid,
-  // This prevents unnecessary fetching since we're using real-time updates
-  staleTime: Infinity
-});
 
   // Add task mutation
-  const addMutation = useMutation({
-    mutationFn: (newTask: { content: string }) => {
-      if (!user?.uid) throw new Error("User not authenticated");
-      return tasks.addTask(newTask.content, user.uid);
+  const addTask = useMutation({
+    mutationFn: (newTask: { content: string, tags? : string[] }) => {
+      return tasks.addTask(newTask.content, userId, newTask.tags);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks', user?.uid] });
+      queryClient.invalidateQueries({ queryKey: ['tasks', userId] });
     }
   });
 
   // Delete task mutation
-  const deleteMutation = useMutation({
+  const deleteTask = useMutation({
     mutationFn: (taskId: string) => {
-      if (!user?.uid) throw new Error("User not authenticated");
-      return tasks.deleteTask(taskId, user.uid);
+      return tasks.deleteTask(taskId, userId);
     },
     onMutate: async (taskId) => {
       // Cancel any outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ['tasks', user?.uid] });
+      await queryClient.cancelQueries({ queryKey: ['tasks', userId] });
       
       // Snapshot the previous value
-      const previousTasks = queryClient.getQueryData(['tasks', user?.uid]);
+      const previousTasks = queryClient.getQueryData(['tasks', userId]);
       
       // Optimistically update to remove the task
-      queryClient.setQueryData(['tasks', user?.uid], (old = []) => 
+      queryClient.setQueryData(['tasks', userId], (old = []) => 
         (old as Task[]).filter(task => task.taskId !== taskId)
       );
       
@@ -79,39 +79,40 @@ export function useTasks() {
     onError: (err, taskId, context) => {
       console.error('Error deleting task:', err);
       // Restore the previous state if there's an error
-      queryClient.setQueryData(['tasks', user?.uid], context?.previousTasks);
+      queryClient.setQueryData(['tasks', userId], context?.previousTasks);
     },
     onSettled: () => {
       // Refetch to ensure consistency
-      queryClient.invalidateQueries({ queryKey: ['tasks', user?.uid] });
+      queryClient.invalidateQueries({ queryKey: ['tasks', userId] });
     }
   });
   
   // Update task mutation
   /* const updateMutation = useMutation({
     mutationFn: ({ taskId, updates }: { taskId: string; updates: Partial<Task> }) => {
-      if (!user?.uid) throw new Error("User not authenticated");
+      if (!userId) throw new Error("User not authenticated");
       return tasks.updateTask(taskId, updates);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks', user?.uid] });
+      queryClient.invalidateQueries({ queryKey: ['tasks', userId] });
     }
   }); */
 
+
   const updateMutation = useMutation({
     mutationFn: ({ taskId, updates }: { taskId: string; updates: Partial<Task> }) => {
-      if (!user?.uid) throw new Error("User not authenticated");
+      if (!userId) throw new Error("User not authenticated");
       return tasks.updateTask(taskId, updates);
     },
     onMutate: async ({ taskId, updates }) => {
       // Cancel any outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ['tasks', user?.uid] });
+      await queryClient.cancelQueries({ queryKey: ['tasks', userId] });
       
       // Snapshot the previous value
-      const previousTasks = queryClient.getQueryData(['tasks', user?.uid]);
+      const previousTasks = queryClient.getQueryData(['tasks', userId]);
       
       // Optimistically update the cache
-      queryClient.setQueryData<Task[] | undefined>(['tasks', user?.uid], (old: Task[] | undefined) => 
+      queryClient.setQueryData<Task[] | undefined>(['tasks', userId], (old: Task[] | undefined) => 
         old?.map((task: Task) => task.taskId === taskId ? { ...task, ...updates } : task)
       );
       
@@ -120,11 +121,11 @@ export function useTasks() {
     },
     onError: (err, variables, context) => {
       // If there's an error, roll back
-      queryClient.setQueryData(['tasks', user?.uid], context?.previousTasks ?? []);
+      queryClient.setQueryData(['tasks', userId], context?.previousTasks ?? []);
     },
     onSettled: () => {
       // Always refetch after error or success
-      queryClient.invalidateQueries({ queryKey: ['tasks', user?.uid] });
+      queryClient.invalidateQueries({ queryKey: ['tasks', userId] });
     }
   });
 
@@ -135,15 +136,19 @@ export function useTasks() {
     error: tasksQuery.error,
     
     // Add functionality
-    addTask: addMutation.mutate,
-    isAdding: addMutation.isPending,
+    addTask: addTask.mutate,
+    isAdding: addTask.isPending,
     
     // Update functionality
     updateTask: updateMutation.mutate,
     isUpdating: updateMutation.isPending,
 
     // Delete functionality
-    deleteTask: deleteMutation.mutate,
-    isDeleting: deleteMutation.isPending,
+    deleteTask: deleteTask.mutate,
+    isDeleting: deleteTask.isPending,
   };
+}
+
+export const useTaskManagement = (userId: string) => {
+  return useTaskOperations(userId);
 }

@@ -4,14 +4,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { fetchTasks } from '../lib/firebase/firestore-fetch';
-import { useAuth } from '@/app/providers/firebase-auth-provider';
-import { Task } from '../lib/models/Task';
-import { useTasks } from '@/app/hooks/use-tasks';
+import { fetchTasks } from '../../lib/firebase/firestore-fetch';
+import { Task } from '../../lib/models/Task';
+import { useTaskManagement } from '@/lib/hooks/use-task-management';
 import TaskItemEdit from './task-edit';
 
-export default function TasksClient() {
-  const { tasks, isLoading, error, updateTask, deleteTask } = useTasks();
+export default function TasksClient({userId} : { userId: string }) {
+  const { tasks, isLoading, error, updateTask, deleteTask } = useTaskManagement(userId);
   
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading tasks</div>;

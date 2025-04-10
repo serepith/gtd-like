@@ -1,11 +1,24 @@
 import { taskConverter } from './converters';
 import { Task } from '../models/Task';
 import { addDoc, collection, getDocs, getFirestore, onSnapshot, query, where, updateDoc, doc, deleteDoc } from 'firebase/firestore';
-import { getFirebaseFirestore } from './firebase-functions';
+import { getFirebaseFirestore } from "./client";
+import { Tag } from '../models/Tag';
 
 export class TaskRepository {
+  removeTagFromTask(taskId: string, tagId: string, uid: string): any {
+    throw new Error('Method not implemented.');
+  }
+  async getTaskTags(taskId: string, uid: string): Promise<Tag[]> {
+    //TODO
+    throw new Error('Method not implemented.');
+  }
   private collection = collection(getFirestore(), 'tasks').withConverter(taskConverter);
-  
+
+  async addTagToTask(taskId: string, tagId: string, uid: string): Promise<void> {
+    //TODO
+    throw new Error('Method not implemented.');
+  }
+
   // Initial fetch
   async getTasks(userId: string): Promise<Task[]> {
     const q = query(this.collection, where('userId', '==', userId));
@@ -21,13 +34,16 @@ export class TaskRepository {
   }
 
   // Push new task TO Firestore
-  async addTask(taskData: string, userId: string) {
+  async addTask(taskData: string, userId: string, taskTags?: string[]) {
     return await addDoc(this.collection, {
       content: taskData,
       userId: userId,
       completed: false,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
+      //LOOKUP TAG IDS TIME
+      tagIds: taskTags,
+      dueDate: undefined
     });
   }
 

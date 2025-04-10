@@ -1,7 +1,7 @@
 import { tagConverter } from './converters';
 import { Tag } from '../models/Tag';
-import { addDoc, collection, getDocs, getFirestore, onSnapshot, query, where, updateDoc, doc, deleteDoc } from 'firebase/firestore';
-import { getFirebaseFirestore } from './firebase-functions';
+import { addDoc, collection, getDocs, getFirestore, onSnapshot, query, where, updateDoc, doc, deleteDoc, limit, DocumentReference, DocumentData } from 'firebase/firestore';
+import { getFirebaseFirestore } from "./client";
 
 export class TagRepository {
   private collection = collection(getFirestore(), 'Tags').withConverter(tagConverter);
@@ -21,7 +21,8 @@ export class TagRepository {
   }
 
   // Push new Tag TO Firestore
-  async addTag(TagData: string, userId: string) {
+  async addTag(TagData: string, userId: string): 
+    Promise<DocumentReference<Partial<Tag>, DocumentData>> {
     return await addDoc(this.collection, {
       content: TagData,
       userId: userId,
@@ -63,6 +64,23 @@ export class TagRepository {
       callback(Tags);
     });
     return unsubscribe; // Return function to stop listening
+  }
+
+  // Autocomplete functionality
+  async searchTagsByPrefix(userId: string, prefix: string): Promise<Tag[]> {
+    const q = query(
+      this.collection,
+      where("userId", "==", userId),
+      where("name", ">=", prefix),
+      where("name", "<=", prefix + "\uf8ff"), // Firebase trick for prefix search
+      limit(10)
+    );
+    
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({
+      ...(doc.data() as Omit<Tag, "tagId">),
+      tagId: doc.id
+    }));
   }
   
   

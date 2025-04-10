@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Image from "next/image";
 import "./globals.css";
-import { FirebaseProvider } from "@/app/providers/firebase-provider";
-import { AuthProvider } from "@/app/providers/firebase-auth-provider";
-import QueryProvider from "./providers/query-provider";
-import { RepositoryProvider } from "./providers/repository-provider";
+import { FirebaseProvider } from "@/components/providers/firebase-provider";
+import { AuthProvider } from "@/components/providers/firebase-auth-provider";
+import QueryProvider from "../components/providers/query-provider";
+import { RepositoryProvider } from "../components/providers/repository-provider";
+import { Providers } from "@/components/providers/providers";
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,18 +31,29 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+      <Script
+          src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}`}
+          strategy="beforeInteractive"
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <FirebaseProvider>
-          <AuthProvider>
-            <RepositoryProvider>
-              <QueryProvider>
-                {children}
-              </QueryProvider>
-            </RepositoryProvider>
-          </AuthProvider>
-        </FirebaseProvider>
+        <Providers>
+        <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+                <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start w-full max-w-4xl">
+                  {children}
+                </main>
+                <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
+                <span className="font-size: 0.75rem; color: #718096;">
+                  This site is protected by reCAPTCHA and the Google
+                  <a href="https://policies.google.com/privacy">Privacy Policy</a> and
+                  <a href="https://policies.google.com/terms">Terms of Service</a> apply.
+                </span>
+                </footer>
+              </div>
+          </Providers>
       </body>
     </html>
   );

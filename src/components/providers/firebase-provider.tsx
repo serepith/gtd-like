@@ -2,7 +2,9 @@
 'use client';
 
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { auth, db, getFirebaseApp, getFirebaseAuth, getFirebaseFirestore } from '../../lib/firebase/firebase-functions';
+import { auth, db } from "@/lib/firebase/client";
+import { getFirebaseApp, getFirebaseFirestore } from "@/lib/firebase/client";
+import { getFirebaseAuth } from "@/lib/firebase/client";
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { Firestore } from 'firebase/firestore';
 import { TaskRepository } from '@/lib/firebase/TaskRepository';

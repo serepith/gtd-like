@@ -1,8 +1,8 @@
 //AI WROTE THIS
 // firestore.ts - Utility functions
 import { collection, addDoc, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
-import { getFirebaseFirestore } from './firebase-functions';
-import { getFirebaseAuth } from './firebase-functions';
+import { getFirebaseFirestore } from "./client";
+import { getFirebaseAuth } from "./client";
 import { Task } from '../models/Task';
 import { QueryFunctionContext } from '@tanstack/react-query';
 
@@ -69,6 +69,7 @@ async function getUserDocuments(
 ): Promise<Task[]> {
   const userId = getCurrentUserId();
   if (!userId) throw new Error("User not authenticated");
+  console.log(userId);
   
   const db = getFirebaseFirestore();
   

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import TaskList from '@/components/task-list'
+import TaskList from '@/components/ui/task-list'
   
   export default async function Tasks() {
 
