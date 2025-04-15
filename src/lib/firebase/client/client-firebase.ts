@@ -37,10 +37,11 @@ export function getFirebaseApp(): FirebaseApp {
         if (!(window as any).__FIREBASE_APPCHECK_INITIALIZED__) {
             console.log(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY);
 
-            initializeAppCheck(firebaseApp, {
+            const app = initializeAppCheck(firebaseApp, {
             provider: new ReCaptchaV3Provider(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""),
             isTokenAutoRefreshEnabled: true
             });
+            console.log(app.app.name);
             (window as any).__FIREBASE_APPCHECK_INITIALIZED__ = true;
         }
       }
@@ -55,22 +56,24 @@ export function getFirebaseApp(): FirebaseApp {
 export function getFirebaseAuth(): Auth {
   if (!firebaseAuth) {
     firebaseAuth = getAuth(getFirebaseApp());
-    
+    console.log(firebaseAuth);
+    // Uncomment this block to enable anonymous auth
     // Only run on client side
-    if (typeof window !== 'undefined') {
-        // Normal anonymous auth for production
-        onAuthStateChanged(firebaseAuth, (user) => {
-          if (!user) {
-            // Auto sign-in anonymously if no user
-            if(firebaseAuth) {
-              signInAnonymously(firebaseAuth).catch(error => {
-                console.error("Anonymous auth failed:", error);
-              });
-            }
-          }
-        });
-      }
+    // if (typeof window !== 'undefined') {
+    //     // Normal anonymous auth for production
+    //     onAuthStateChanged(firebaseAuth, (user) => {
+    //       if (!user) {
+    //         // Auto sign-in anonymously if no user
+    //         if(firebaseAuth) {
+    //           signInAnonymously(firebaseAuth).catch(error => {
+    //             console.error("Anonymous auth failed:", error);
+    //           });
+    //         }
+    //       }
+    //     });
+    //   }
   }
+
   return firebaseAuth;
 }
 

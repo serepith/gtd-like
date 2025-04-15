@@ -1,17 +1,20 @@
 'use client';
 
 import { useContext, useState } from 'react';
-import { useTaskManagement } from '@/lib/hooks/use-task-management';
-import { useTaskTags } from '@/lib/hooks/use-task-tags';
+import { useTaskManagement } from '@/lib/query/hooks/use-task-management';
+import { useTaskTags } from '@/lib/query/hooks/use-task-tags';
 import TagInput from './tag-input';
 import { AuthContext } from '../providers/firebase-auth-provider';
-import { useAuthenticatedUser } from '@/lib/hooks/use-auth';
+import { useAuth, useGuaranteedAuth, useSuspenseAuth } from '@/lib/query/hooks/use-auth';
+import {useAuthState} from "react-firebase-hooks/auth";
 
 export default function TextInput() {
   const [taskText, setTaskText] = useState('');
   const [taskTagsState, setTaskTags] = useState<string[]>([]);
-  const user = useAuthenticatedUser();
+  const user = useGuaranteedAuth();
   const { tasks, addTask } = useTaskManagement(user.uid);
+
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     //what is the default behavior???
@@ -27,6 +30,8 @@ export default function TextInput() {
     }
   };
 
+
+  
   return (
     <div className="p-4">
       <h1>Welcome, {user.displayName}.</h1>

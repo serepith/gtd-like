@@ -10,13 +10,10 @@ import { ReactNode } from 'react';
 import TaskInput from '../ui/task-input';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useAuth } from '@/lib/query/hooks/use-auth';
 
 export default function ClientFallback() {
-  const { user, loading } = useContext(AuthContext);
-
-  if (loading) {
-    return <LoadingSpinner />;
-  }
+  const { data : user } = useAuth();
 
   return (
     <div>

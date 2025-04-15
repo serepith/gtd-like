@@ -2,22 +2,23 @@
 'use client';
 
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { auth, db } from "@/lib/firebase/client";
-import { getFirebaseApp, getFirebaseFirestore } from "@/lib/firebase/client";
-import { getFirebaseAuth } from "@/lib/firebase/client";
+import { auth, db } from "@/lib/firebase/client/client-firebase";
+import { getFirebaseApp, getFirebaseFirestore } from "@/lib/firebase/client/client-firebase";
+import { getFirebaseAuth } from "@/lib/firebase/client/client-firebase";
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { Firestore } from 'firebase/firestore';
-import { TaskRepository } from '@/lib/firebase/TaskRepository';
+import { TaskManager } from '@/lib/firebase/client/task-manager';
 
 // FirebaseProvider - Handles service initialization only
 export function FirebaseProvider({ children } : { children: ReactNode }) {
   useEffect(() => {
     // Initialize Firebase services
     getFirebaseApp();
-    getFirebaseAuth(); // This triggers auto sign-in but doesn't track state
+    console.log("Firebase App initialized");
+    getFirebaseAuth(); 
+    console.log("Firebase Auth initialized");
     getFirebaseFirestore();
-    
-    // No auth state tracking here
+    console.log("Firebase Firestore initialized");
   }, []);
   
   return children;

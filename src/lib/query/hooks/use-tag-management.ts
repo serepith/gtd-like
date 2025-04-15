@@ -3,7 +3,7 @@
 
 import { useSuspenseQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRequireAuth } from './use-auth';
-import { useRepositories } from './use-repositories';
+import { useManagers } from './use-managers';
 import { useEffect, useState } from 'react';
 import { Tag } from '@/lib/models/Tag';
 import LoadingSpinner from '@/components/providers/loading-spinner';
@@ -12,24 +12,24 @@ import { DocumentData, DocumentReference } from 'firebase/firestore';
 
 // Hook without auth
 const useTagOperations = (userId : string) => {
-    const { tags: tagsRepo } = useRepositories();
+    const { tags: tagsManager } = useManagers();
     const queryClient = useQueryClient();
 
     // Query for all tags
     const tagsQuery = useSuspenseQuery({
       queryKey: ['tags', userId],
-      queryFn: () => tagsRepo.getTags(userId),
+      queryFn: () => tagsManager.getTags(userId),
       staleTime: Infinity, // Don't refetch automatically
     });
     
     // Set up subscription for real-time updates
     useEffect(() => {
-      const unsubscribe = tagsRepo.onTagsChanged(userId, (newTags) => {
+      const unsubscribe = tagsManager.onTagsChanged(userId, (newTags) => {
         queryClient.setQueryData(['tags', userId], newTags);
       });
       
       return () => unsubscribe();
-    }, [userId, queryClient, tagsRepo]);
+    }, [userId, queryClient, tagsManager]);
     
     // Add tag mutation
     const addTag = useMutation<
@@ -38,7 +38,7 @@ const useTagOperations = (userId : string) => {
         string // Input parameter type
     >({
       mutationFn: (content: string) => {
-        return tagsRepo.addTag(content, userId);
+        return tagsManager.addTag(content, userId);
       },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['tags', userId] });
@@ -48,7 +48,7 @@ const useTagOperations = (userId : string) => {
     // Delete tag mutation
     const deleteTag = useMutation({
       mutationFn: (tagId: string) => {
-        return tagsRepo.deleteTag(tagId, userId);
+        return tagsManager.deleteTag(tagId, userId);
       },
       onMutate: async (tagId) => {
         await queryClient.cancelQueries({ queryKey: ['tags', userId] });

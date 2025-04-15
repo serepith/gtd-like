@@ -4,42 +4,25 @@ import TaskInput from "../components/ui/task-input";
 import Link from 'next/link';
 import { Suspense, useContext } from "react";
 import LoadingSpinner from "../components/providers/loading-spinner";
-import { AuthContext } from "@/components/providers/firebase-auth-provider";
 import { cookies } from "next/headers";
 import ClientFallback from "@/components/auth/client-fallback";
 import { getServerUser } from "@/lib/server/handle-auth";
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
-import { fetchUserTasks } from "@/lib/server/get-user-data";
+import { serveTaskManagement } from "@/lib/query/services/serve-task-management";
 import DashboardShell from "@/components/auth/dashboard-shell";
 import { ErrorBoundary } from "@/components/errors/boundaries/error-boundary";
 import { AuthErrorBoundary } from "@/components/errors/boundaries/auth-error-boundary";
 import { GeneralErrorFallback } from "@/components/errors/fallbacks/general-error-fallback";
+import { serveAuth } from "@/lib/query/services/serve-auth";
 
 export default async function Home() {
-  const user = await getServerUser();
-  // Prefetch data for this user
-  const queryClient = new QueryClient();
-  
-  if (user) {
-    // Fetch initial data server-side
-    await queryClient.prefetchQuery({
-      queryKey: ['tasks', user.uid],
-      queryFn: () => fetchUserTasks(user.uid) // Your server-side fetch function
-    });
-  }
-  
+  const user = await serveAuth();
 
-
-  if (!user) {
-    // No authenticated user, show the client fallback
-    return <ClientFallback />;
-  }
+  console.log("server user works", user);
 
   // Dehydrate the query cache
-  const dehydratedState = dehydrate(queryClient);
+  const dehydratedState = serveTaskManagement(user.uid);
   
-
-
   // Pass both the user and dehydrated queries to client
   return (
 // Outermost: Error Boundary (catches all errors)
@@ -49,7 +32,7 @@ export default async function Home() {
   <Suspense fallback={<LoadingSpinner />}>
     
     {/* Next: Hydration Boundary (client components) */}
-    <DashboardShell>
+    <DashboardShell user={user}>
     
       {/* Inner: Auth-specific Error Boundary (for auth errors only) */}
       <AuthErrorBoundary>

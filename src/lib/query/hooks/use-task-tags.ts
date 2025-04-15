@@ -3,7 +3,7 @@
 
 import { useSuspenseQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRequireAuth } from './use-auth';
-import { useRepositories } from './use-repositories';
+import { useManagers } from './use-managers';
 import { useEffect, useState } from 'react';
 import { Tag } from '@/lib/models/Tag';
 import { useTagManagement } from './use-tag-management';
@@ -11,7 +11,7 @@ import { useTagManagement } from './use-tag-management';
 
 // 2. Hook for task-specific tags
 const useTaskTagOperations = (taskId: string, userId: string) => {
-  const { tasks: tasksRepo } = useRepositories();
+  const { tasks: tasksRepo } = useManagers();
   const queryClient = useQueryClient();
   const { allTags } = useTagManagement(userId); // Reuse the all tags hook
   

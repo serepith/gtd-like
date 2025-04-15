@@ -1,15 +1,18 @@
-import { tagConverter } from './converters';
-import { Tag } from '../models/Tag';
+import { tagConverter } from '../converters';
+import { Tag } from '../../models/Tag';
 import { addDoc, collection, getDocs, getFirestore, onSnapshot, query, where, updateDoc, doc, deleteDoc, limit, DocumentReference, DocumentData } from 'firebase/firestore';
-import { getFirebaseFirestore } from "./client";
+import { getFirebaseFirestore } from "./client-firebase";
 
-export class TagRepository {
-  private collection = collection(getFirestore(), 'Tags').withConverter(tagConverter);
+export class TagManager {
+  private collection = collection(getFirebaseFirestore(), 'tags').withConverter(tagConverter);
   
   // Initial fetch
   async getTags(userId: string): Promise<Tag[]> {
+  console.log('Fetching tags client side for user:', userId);
+
     const q = query(this.collection, where('userId', '==', userId));
     const snapshot = await getDocs(q);
+  console.log('Fetched tags client side for user:', userId);
       
     return snapshot.docs.map(doc => {
       const data = doc.data();

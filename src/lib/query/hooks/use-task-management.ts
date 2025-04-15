@@ -4,22 +4,20 @@
 
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
-import { db } from "../firebase/client";
-import { TaskRepository } from '@/lib/firebase/TaskRepository';
+import { db } from "../../firebase/client/client-firebase";
+import { TaskManager } from '@/lib/firebase/client/task-manager';
 import { useQueryClient } from '@tanstack/react-query';
-import { useRequireAuth } from './use-auth';
 import { useEffect } from 'react';
-import { useRepositories } from './use-repositories'
+import { useManagers } from './use-managers'
 import { Task } from '@/lib/models/Task';
-import { TagRepository } from '@/lib/firebase/TagRepository';
+import { TagManager } from '@/lib/firebase/client/tag-manager';
 
 // operations without auth
 const useTaskOperations = (userId : string) => {
-  const { tasks } = useRepositories();
+  console.log('Rendering tasks for user:', userId);
+  const { tasks } = useManagers();
   const queryClient = useQueryClient();
-  
-  
-  console.log("user? ", userId);
+
 
   // The query is still used for initial loading state and error handling
   const tasksQuery = useQuery({

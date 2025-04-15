@@ -1,6 +1,6 @@
 // lib/server/firebase-auth.ts
 import { cookies } from 'next/headers';
-import { getFirebaseAdmin } from '../firebase/firebase-admin';
+import { getFirebaseAdmin } from '../firebase/server/server-firebase';
 import { redirect } from 'next/navigation';
 import type { DecodedIdToken } from 'firebase-admin/auth';
 
@@ -8,7 +8,6 @@ import type { DecodedIdToken } from 'firebase-admin/auth';
 export async function getServerUser(): Promise<DecodedIdToken | null> {
   const cookieStore = await cookies();
   const sessionCookie = cookieStore.get('firebase-session')?.value;
-  
   
   if (!sessionCookie) {
     console.log('No session cookie found');

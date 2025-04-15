@@ -1,4 +1,4 @@
-import { getFirebaseAdmin } from "../firebase/firebase-admin";
+import { getFirebaseAdmin } from "../firebase/server/server-firebase";
 
 // Firestore access with user context
 export async function fetchUserTasks(userId: string, limit = 10) {

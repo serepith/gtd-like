@@ -3,20 +3,20 @@
 import { AuthProvider } from "./firebase-auth-provider";
 import { FirebaseProvider } from "./firebase-provider";
 import QueryProvider from "./query-provider";
-import { RepositoryProvider } from "./repository-provider";
+import { ManagerProvider } from "./manager-provider";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <div>
         <FirebaseProvider>
-                  <AuthProvider>
-                    <RepositoryProvider>
-                      <QueryProvider>
-                      {children}
-                      </QueryProvider>
-                    </RepositoryProvider>
-                  </AuthProvider>
-                </FirebaseProvider>
+          <AuthProvider>
+            <ManagerProvider>
+              <QueryProvider>
+              {children}
+              </QueryProvider>
+            </ManagerProvider>
+          </AuthProvider>
+        </FirebaseProvider>
     </div>
   );
 }

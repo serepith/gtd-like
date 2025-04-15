@@ -1,7 +1,7 @@
 // app/api/auth/session/route.ts
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { getFirebaseAdmin } from '@/lib/firebase/firebase-admin';
+import { getFirebaseAdmin } from '@/lib/firebase/server/server-firebase';
 import { verifyRecaptcha } from '@/lib/server/recaptcha';
 
 export async function POST(request: Request) {

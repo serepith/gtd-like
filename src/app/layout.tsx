@@ -5,7 +5,7 @@ import "./globals.css";
 import { FirebaseProvider } from "@/components/providers/firebase-provider";
 import { AuthProvider } from "@/components/providers/firebase-auth-provider";
 import QueryProvider from "../components/providers/query-provider";
-import { RepositoryProvider } from "../components/providers/repository-provider";
+import { ManagerProvider } from "../components/providers/manager-provider";
 import { Providers } from "@/components/providers/providers";
 import Script from "next/script";
 

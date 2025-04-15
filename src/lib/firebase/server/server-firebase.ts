@@ -1,11 +1,11 @@
 // lib/firebase/firebase-admin.ts
 import { cert, getApps, initializeApp, ServiceAccount } from 'firebase-admin/app';
-import { getAuth } from 'firebase-admin/auth';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getAuth as getFirebaseAuth } from 'firebase-admin/auth';
+import { getFirestore as getFirebaseFirestore } from 'firebase-admin/firestore';
 
 interface FirebaseAdminApp {
-  getAuth: typeof getAuth;
-  getFirestore: typeof getFirestore;
+  getAuth: typeof getFirebaseAuth;
+  getFirestore: typeof getFirebaseFirestore;
 }
 
 // Singleton pattern to prevent multiple initializations
@@ -15,8 +15,8 @@ export function getFirebaseAdmin(): FirebaseAdminApp {
   if (apps.length > 0) {
     // Return the existing instance
     return {
-      getAuth: getAuth,
-      getFirestore: getFirestore,
+      getAuth: getFirebaseAuth,
+      getFirestore: getFirebaseFirestore,
     };
   }
 
@@ -52,7 +52,7 @@ export function getFirebaseAdmin(): FirebaseAdminApp {
   });
 
   return {
-    getAuth: getAuth,
-    getFirestore: getFirestore,
+    getAuth: getFirebaseAuth,
+    getFirestore: getFirebaseFirestore,
   };
 }

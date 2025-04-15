@@ -2,8 +2,8 @@
 import { Tag } from '@/lib/models/Tag';
 import React, { useState, KeyboardEvent, useRef, useEffect, useCallback } from 'react';
 import { useDebounce } from 'use-debounce';
-import { useTaskTags } from '@/lib/hooks/use-task-tags';
-import { useTagManagement } from '@/lib/hooks/use-tag-management';
+import { useTaskTags } from '@/lib/query/hooks/use-task-tags';
+import { useTagManagement } from '@/lib/query/hooks/use-tag-management';
 
 interface TagInputProps {
   userId: string;

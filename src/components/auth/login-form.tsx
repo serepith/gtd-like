@@ -4,8 +4,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, RecaptchaVerifier } from 'firebase/auth';
-import { auth, getFirebaseAuth } from '../../lib/firebase/client';
-import { useRecaptcha } from '@/lib/hooks/use-recaptcha';
+import { auth, getFirebaseAuth } from '../../lib/firebase/client/client-firebase';
+import { useRecaptcha } from '@/lib/query/hooks/use-recaptcha';
 
 
 export default function LoginForm() {
