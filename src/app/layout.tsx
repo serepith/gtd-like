@@ -2,11 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Image from "next/image";
 import "./globals.css";
-import { FirebaseProvider } from "@/components/providers/firebase-provider";
-import { AuthProvider } from "@/components/providers/firebase-auth-provider";
-import QueryProvider from "../components/providers/query-provider";
-import { ManagerProvider } from "../components/providers/manager-provider";
-import { Providers } from "@/components/providers/providers";
 import Script from "next/script";
 
 const geistSans = Geist({
@@ -40,7 +35,6 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Providers>
         <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
                 <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start w-full max-w-4xl">
                   {children}
@@ -53,7 +47,6 @@ export default function RootLayout({
                 </span>
                 </footer>
               </div>
-          </Providers>
       </body>
     </html>
   );

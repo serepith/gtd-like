@@ -3,7 +3,7 @@ import * as React from "react";
 import TaskInput from "../components/ui/task-input";
 import Link from 'next/link';
 import { Suspense, useContext } from "react";
-import LoadingSpinner from "../components/providers/loading-spinner";
+import LoadingSpinner from "../components/ui/loading-spinner";
 import { cookies } from "next/headers";
 import ClientFallback from "@/components/auth/client-fallback";
 import { getServerUser } from "@/lib/server/handle-auth";
@@ -16,12 +16,14 @@ import { GeneralErrorFallback } from "@/components/errors/fallbacks/general-erro
 import { serveAuth } from "@/lib/query/services/serve-auth";
 
 export default async function Home() {
-  const user = await serveAuth();
+  // const user = await serveAuth();
 
-  console.log("server user works", user);
+  // console.log("server user works", user);
 
-  // Dehydrate the query cache
-  const dehydratedState = serveTaskManagement(user.uid);
+  // // Dehydrate the query cache
+  // const dehydratedState = serveTaskManagement(user.uid);
+
+  
   
   // Pass both the user and dehydrated queries to client
   return (

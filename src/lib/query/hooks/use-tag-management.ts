@@ -6,7 +6,7 @@ import { useRequireAuth } from './use-auth';
 import { useManagers } from './use-managers';
 import { useEffect, useState } from 'react';
 import { Tag } from '@/lib/models/Tag';
-import LoadingSpinner from '@/components/providers/loading-spinner';
+import LoadingSpinner from '@/components/ui/loading-spinner';
 import { DocumentData, DocumentReference } from 'firebase/firestore';
 
 

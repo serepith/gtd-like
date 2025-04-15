@@ -4,7 +4,7 @@
 import { useContext, useEffect } from 'react';
 import { useRouter } from 'next/navigation'; 
 import { AuthContext } from "../providers/firebase-auth-provider";
-import LoadingSpinner from "../providers/loading-spinner";
+import LoadingSpinner from "../ui/loading-spinner";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuth, useSuspenseAuth } from '@/lib/query/hooks/use-auth';

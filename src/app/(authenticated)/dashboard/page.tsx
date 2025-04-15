@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/components/providers/loading-spinner";
+import LoadingSpinner from "@/components/ui/loading-spinner";
 import TaskInput from "@/components/ui/task-input";
 import Link from "next/link";
 import { Suspense } from "react";

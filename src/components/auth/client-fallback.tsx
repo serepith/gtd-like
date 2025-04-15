@@ -3,7 +3,7 @@
 
 import { useContext } from 'react';
 import { AuthContext } from '@/components/providers/firebase-auth-provider';
-import LoadingSpinner from '../providers/loading-spinner';
+import LoadingSpinner from '../ui/loading-spinner';
 import DashboardShell from './dashboard-shell';
 
 import { ReactNode } from 'react';
