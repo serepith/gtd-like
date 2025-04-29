@@ -1,18 +1,17 @@
 'use client';
 
 import { useContext, useState } from 'react';
-import { useTaskManagement } from '@/lib/query/hooks/use-task-management';
-import { useTaskTags } from '@/lib/query/hooks/use-task-tags';
+import { useTaskManagement } from '@/lib/hooks/use-task-management';
 import TagInput from './tag-input';
-import { AuthContext } from '../providers/firebase-auth-provider';
-import { useAuth, useGuaranteedAuth, useSuspenseAuth } from '@/lib/query/hooks/use-auth';
+import { useAuth, useGuaranteedAuth, useSuspenseAuth } from '@/lib/hooks/use-auth';
 import {useAuthState} from "react-firebase-hooks/auth";
 
 export default function TextInput() {
   const [taskText, setTaskText] = useState('');
   const [taskTagsState, setTaskTags] = useState<string[]>([]);
-  const user = useGuaranteedAuth();
-  const { tasks, addTask } = useTaskManagement(user.uid);
+  
+  const user = useAuth();
+  const { tasks, addTask } = useTaskManagement(user?.uid || '');
 
 
 
@@ -24,7 +23,7 @@ export default function TextInput() {
     try {
         setTaskText('');
         setTaskTags([]);
-        addTask({content: taskText, tags: taskTagsState});
+        addTask({ title: taskText });
     } catch (error) {
       setTaskText(`Error: ${(error as Error).message}`);
     }
@@ -34,7 +33,7 @@ export default function TextInput() {
   
   return (
     <div className="p-4">
-      <h1>Welcome, {user.displayName}.</h1>
+      <h1>Welcome, {user?.displayName}.</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
@@ -44,7 +43,7 @@ export default function TextInput() {
           placeholder="What's on your mind?"
         />
         <TagInput 
-        userId={user.uid}
+        userId={user?.uid || ''}
         onTagsChange={function (enteredTags: string[]): void {
           console.log('onTagsChange', enteredTags, 'Function not implemented');
           setTaskTags(enteredTags);

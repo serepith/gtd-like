@@ -2,6 +2,7 @@
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import LoginForm from '../../../components/auth/login-form';
+import { getFirebaseAuth } from '@/lib/data-firebase/init';
 
 export default async function LoginPage() {
   // Check if already logged in
@@ -9,6 +10,10 @@ export default async function LoginPage() {
   
   if (sessionCookie) {
     // Already authenticated, go to dashboard
+    redirect('/');
+  }
+
+  if (getFirebaseAuth().currentUser) {
     redirect('/');
   }
   

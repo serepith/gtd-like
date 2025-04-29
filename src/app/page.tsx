@@ -4,27 +4,48 @@ import TaskInput from "../components/ui/task-input";
 import Link from 'next/link';
 import { Suspense, useContext } from "react";
 import LoadingSpinner from "../components/ui/loading-spinner";
-import { cookies } from "next/headers";
 import ClientFallback from "@/components/auth/client-fallback";
-import { getServerUser } from "@/lib/server/handle-auth";
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
-import { serveTaskManagement } from "@/lib/query/services/serve-task-management";
 import DashboardShell from "@/components/auth/dashboard-shell";
 import { ErrorBoundary } from "@/components/errors/boundaries/error-boundary";
 import { AuthErrorBoundary } from "@/components/errors/boundaries/auth-error-boundary";
 import { GeneralErrorFallback } from "@/components/errors/fallbacks/general-error-fallback";
-import { serveAuth } from "@/lib/query/services/serve-auth";
+import { getFirebaseAuth } from "@/lib/data-firebase/init";
+import { cookies } from 'next/headers';
+import { User } from "firebase/auth";
+import { verifySession } from "@/lib/server-actions/auth";
+import { redirect } from "next/navigation";
 
 export default async function Home() {
-  // const user = await serveAuth();
+  //const user = await serveAuth();
 
   // console.log("server user works", user);
 
   // // Dehydrate the query cache
   // const dehydratedState = serveTaskManagement(user.uid);
+  //const sessionCookie = (await cookies()).get('firebase-session')?.value;
 
-  
-  
+  // if(!sessionCookie) {
+  //   return (
+  //     <ClientFallback/>
+  //   );
+  // }
+
+//   let user = null;
+
+//   if(sessionCookie) {
+//     user  = (await verifySession(sessionCookie)).user;
+// }
+
+  //console.log("bruh it not null", !user, user);
+
+  // if (!user) {
+  //   // User is not authenticated, show the client-side fallback
+  //   return (
+  //     <ClientFallback/>
+  //   );
+  // }
+
   // Pass both the user and dehydrated queries to client
   return (
 // Outermost: Error Boundary (catches all errors)
@@ -32,13 +53,9 @@ export default async function Home() {
   
   {/* Next: Suspense (handles loading states) */}
   <Suspense fallback={<LoadingSpinner />}>
+
+    <DashboardShell>
     
-    {/* Next: Hydration Boundary (client components) */}
-    <DashboardShell user={user}>
-    
-      {/* Inner: Auth-specific Error Boundary (for auth errors only) */}
-      <AuthErrorBoundary>
-        <HydrationBoundary state={dehydratedState}>
           <TaskInput />
           <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
                     <a
@@ -87,8 +104,6 @@ export default async function Home() {
                       Go to nextjs.org →
                     </a>
           </footer>
-        </HydrationBoundary>
-      </AuthErrorBoundary>
       
     </DashboardShell>
     
@@ -99,7 +114,7 @@ export default async function Home() {
   );
 
 
-  console.log("server user works", user);
+  //console.log("server user works", user);
   // User is authenticated, show the server-rendered content
 
   return (

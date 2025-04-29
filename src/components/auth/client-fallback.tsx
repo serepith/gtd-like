@@ -1,47 +1,50 @@
 // ClientFallback.tsx (Client Component)
 'use client';
 
-import { useContext } from 'react';
-import { AuthContext } from '@/components/providers/firebase-auth-provider';
 import LoadingSpinner from '../ui/loading-spinner';
-import DashboardShell from './dashboard-shell';
-
-import { ReactNode } from 'react';
 import TaskInput from '../ui/task-input';
-import Link from 'next/link';
-import Image from 'next/image';
-import { useAuth } from '@/lib/query/hooks/use-auth';
+import { useAuth } from '@/lib/hooks/use-auth';
+import LoginForm from './login-form';
+import { Router } from 'express';
+import { useRouter } from 'next/navigation';
 
 export default function ClientFallback() {
-  const { data : user } = useAuth();
+  //const { data : user, isLoading } = useAuth();
+  const user = useAuth();
+  const router = useRouter();
 
-  return (
-    <div>
-            {user ? (
-        // Logged-in view
-        <div>
-          <p>Welcome back, idiot, server auth isn't working {user.displayName || 'User'}!</p>
-          <TaskInput />
-        </div>
-      ) : (
-        // Guest view
-        <div>
-          <p>Sign in to manage your tasks</p>
-          <Link
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-              href="/login"
-           >
-            <Image
-                className="dark:invert"
-                src="/vercel.svg"
-                alt="Vercel logomark"
-                width={20}
-                height={20}
-              />
-              Login
-              </Link>
-        </div>
-      )}
-    </div>
-  );
+  // try {
+  //   if(isLoading) {
+  //     return (
+  //       <div className="flex items-center justify-center h-screen">
+  //         <LoadingSpinner />
+  //       </div>
+  //     );
+  //   }
+
+  //   if(!user) {
+  //     router.push('/login');
+  //   }
+
+    return (
+      <div>
+              {user ? (
+          // Logged-in view
+          <div>
+            <p>Welcome back, idiot, server auth isn't working {user.displayName || 'User'}!</p>
+            <TaskInput />
+          </div>
+        ) : (
+          // Guest view
+          <div>
+            <p>Sign in to manage your tasks</p>
+            <LoginForm />
+          </div>
+        )}
+      </div>
+    );
+  // } catch (error) {
+  //   console.error('Render error:', error);
+  //   return <div>Component failed to render</div>;
+  // }
 }

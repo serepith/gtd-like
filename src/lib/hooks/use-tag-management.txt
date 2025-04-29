@@ -1,0 +1,98 @@
+// //AI WROTE THIS
+// 'use client';
+
+// import { useSuspenseQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+// //import { useManagers } from './use-managers';
+// import { useEffect, useState } from 'react';
+// import LoadingSpinner from '@/components/ui/loading-spinner';
+// import { addDoc, collection, deleteDoc, doc, DocumentData, DocumentReference, getDocs, limit, onSnapshot, query, updateDoc, where } from 'firebase/firestore';
+// import { Tag } from '../types/gtd-items';
+
+
+
+// // export const useTagManagement = (userId: string) => {
+  
+// //     //const { tags: tagsManager } = useManagers();
+// //     const queryClient = useQueryClient();
+
+// //     // Query for all tags
+// //     const tagsQuery = useSuspenseQuery({
+// //       queryKey: ['tags', userId],
+// //       queryFn: () => collectionRef.read(userId),
+// //       staleTime: Infinity, // Don't refetch automatically
+// //     });
+    
+// //     // Set up subscription for real-time updates
+// //     useEffect(() => {
+// //       const unsubscribe = tags.onTagsChanged(userId, (newTags) => {
+// //         queryClient.setQueryData(['tags', userId], newTags);
+// //       });
+      
+// //       return () => unsubscribe();
+// //     }, [userId, queryClient]);
+    
+// //     // Add tag mutation
+// //     const addTag = useMutation<
+// //         DocumentReference<Partial<Tag>, DocumentData>, // What tagsRepo.addTag returns
+// //         Error, // Error type
+// //         string // Input parameter type
+// //     >({
+// //       mutationFn: (content: string) => {
+// //         return tags.addTag(content, userId);
+// //       },
+// //       onSuccess: () => {
+// //         queryClient.invalidateQueries({ queryKey: ['tags', userId] });
+// //       }
+// //     });
+    
+// //     // Delete tag mutation
+// //     const deleteTag = useMutation({
+// //       mutationFn: (tagId: string) => {
+// //         return tags.deleteTag(tagId, userId);
+// //       },
+// //       onMutate: async (tagId) => {
+// //         await queryClient.cancelQueries({ queryKey: ['tags', userId] });
+        
+// //         const previousTags = queryClient.getQueryData<Tag[]>(['tags', userId]);
+        
+// //         queryClient.setQueryData<Tag[]>(['tags', userId], (old = []) => 
+// //           old.filter(tag => tag.tagId !== tagId)
+// //         );
+        
+// //         return { previousTags };
+// //       },
+// //       onError: (err, tagId, context) => {
+// //         console.error('Error deleting tag:', err);
+// //         // Restore the previous state if there's an error
+// //         queryClient.setQueryData(['tags', userId], context?.previousTags);
+// //       },
+// //       onSettled: () => {
+// //         queryClient.invalidateQueries({ queryKey: ['tags', userId] });
+// //       }
+// //     });
+
+// //     const findTagById = (tagId: string) => {
+// //       if (!tagsQuery.data) {
+// //         throw new Error('Tags data is not available');
+// //       }
+// //       const tag = tagsQuery.data.find(tag => tag.tagId === tagId);
+// //       if (!tag) {
+// //         throw new Error(`Tag with ID ${tagId} not found`);
+// //       }
+// //       return tag;
+// //     };
+
+// //     const findTagsByPrefix = (prefix: string) => {
+// //       return tagsQuery.data.filter(tag => tag.content.toLowerCase().startsWith(prefix.toLowerCase()));
+// //     }
+    
+// //     return {
+// //       allTags: tagsQuery.data,
+// //       addTag: addTag.mutate,
+// //       deleteTag: deleteTag.mutate,
+// //       findTag: findTagById,
+// //       findTagsByPrefix,
+// //       isAdding: addTag.isPending,
+// //       isDeleting: deleteTag.isPending,
+// //     };
+// //   };

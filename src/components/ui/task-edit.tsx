@@ -1,7 +1,7 @@
 //AI WROTE THIS
 // TaskItem.tsx
+import { Task } from '@/lib/types/gtd-items';
 import { useEffect, useState } from 'react';
-import { Task } from '../../lib/models/Task'; 
 
 interface TaskItemProps {
   task: Task;
@@ -11,31 +11,31 @@ interface TaskItemProps {
 
 export default function TaskItemEdit({ task, onUpdate, onDelete }: TaskItemProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedContent, setEditedContent] = useState(task.content);
-  const [editedNotes, setEditedNotes] = useState(task.notes || '');
+  const [editedTitle, setEditedTitle] = useState(task.title);
+  const [editedContent, setEditedContent] = useState(task.content || '');
   
     // Important: Update local state when prop changes
     useEffect(() => {
-        setEditedContent(task.content);
-        setEditedNotes(task.notes || '');
+        setEditedTitle(task.title);
+        setEditedContent(task.content || '');
     }, [task]);
     
     // Handler for content input changes
-const handleContentChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    setEditedContent(e.target.value);
+const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    setEditedTitle(e.target.value);
 };
   
   // Handler for notes textarea changes
-const handleNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>): void => {
-    setEditedNotes(e.target.value);
+const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>): void => {
+    setEditedContent(e.target.value);
 };
   
   // Handler for save button
   const handleSave = () => {
     // Call the onUpdate function from parent component
-    onUpdate(task.taskId, {
-      content: editedContent,
-      notes: editedNotes
+    onUpdate(task.id, {
+      title: editedTitle,
+      content: editedContent
     });
     
     // Exit edit mode
@@ -43,7 +43,7 @@ const handleNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>): void => {
   };
 
   const handleDelete = () => {
-    onDelete(task.taskId);
+    onDelete(task.id);
 };
   
   if (isEditing) {
@@ -51,13 +51,13 @@ const handleNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>): void => {
       <li className="p-3 border rounded">
         <input
           type="text"
-          value={editedContent}
-          onChange={handleContentChange}
+          value={editedTitle}
+          onChange={handleTitleChange}
           className="w-full mb-2 p-1 border rounded"
         />
         <textarea
-          value={editedNotes}
-          onChange={handleNotesChange}
+          value={editedContent}
+          onChange={handleContentChange}
           className="w-full p-1 border rounded text-sm"
           rows={2}
         />
@@ -86,12 +86,12 @@ const handleNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>): void => {
 
   return (
     <li 
-      key={task.taskId} 
+      key={task.id} 
       className="p-3 border rounded cursor-pointer hover:bg-gray-50"
       onClick={() => setIsEditing(true)}
     >
       <h3 className="font-medium">{task.content}</h3>
-      {task.notes && <p className="text-sm">{task.notes}</p>}
+      {task.title && <p className="text-sm">{task.content}</p>}
     </li>
   );
 }

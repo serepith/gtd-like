@@ -1,17 +1,23 @@
 // app/api/auth/session/route.ts
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { getFirebaseAdmin } from '@/lib/firebase/server/server-firebase';
-import { verifyRecaptcha } from '@/lib/server/recaptcha';
+import { getFirebaseAdmin } from '@/lib/server-actions/firebase-admin';
+import { diagnoseTiming, verifyRecaptcha } from '@/lib/server-actions/auth';
+import { getAuth } from 'firebase-admin/auth';
 
 export async function POST(request: Request) {
 
   const { userToken, recaptchaToken } = await request.json();
+
+  // console.log('recaptchaToken', recaptchaToken);
+  // console.log('userToken', userToken);
   
   // 1. Verify reCAPTCHA first
   const recaptchaResponse = await verifyRecaptcha(recaptchaToken);
+
+  console.log('recaptchaResponse', recaptchaResponse);
   
-  // 2. Check score threshold
+  //2. Check score threshold
   if (recaptchaResponse.score < 0.5) {
     return new Response(JSON.stringify({ 
       error: 'Security check failed' 
@@ -27,13 +33,10 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-
-    // Initialize Firebase Admin
-    const { getAuth } = getFirebaseAdmin();
     
     // Create session cookie (15 days)
     const expiresIn = 60 * 60 * 24 * 14 * 1000;
-    const sessionCookie = await getAuth().createSessionCookie(userToken, { expiresIn });
+    const sessionCookie = await getAuth(await getFirebaseAdmin()).createSessionCookie(userToken, { expiresIn });
     
     // Set cookie for server-side auth
     (await

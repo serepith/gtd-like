@@ -4,28 +4,28 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Task } from '../../lib/models/Task';
-import { useTaskManagement } from '@/lib/query/hooks/use-task-management';
+//import { Task } from '../../lib/types/Task';
+import { useTaskManagement } from '@/lib/hooks/use-task-management';
 import TaskItemEdit from './task-edit';
-import { useGuaranteedAuth } from '@/lib/query/hooks/use-auth';
+import { useGuaranteedAuth } from '@/lib/hooks/use-auth';
 
 export default function TasksClient() {
   const user = useGuaranteedAuth();
-  const { tasks, isLoading, error, updateTask, deleteTask } = useTaskManagement(user.uid);
+  const tasks = useTaskManagement(user.uid);
   
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error loading tasks</div>;
+  //if (isLoading) return <div>Loading...</div>;
+  //if (error) return <div>Error loading tasks</div>;
   
   return (
     <ul className="space-y-2">
-      {tasks?.map((task) => (
+      {/* {tasks?.map((task: Task) => (
           <TaskItemEdit
             key={task.taskId}
             task={task}
             onUpdate={(taskId, updates) => updateTask({ taskId, updates })}
             onDelete={(taskId) => deleteTask(taskId)}
           />
-      ))}
+      ))} */}
     </ul>
   );
 }

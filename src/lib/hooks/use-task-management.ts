@@ -3,62 +3,52 @@
 'use client';
 
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
-import { db } from "../../firebase/client/client-firebase";
-import { TaskManager } from '@/lib/firebase/client/task-manager';
+import { collection, onSnapshot, query, orderBy, where, getDocs, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
-import { useManagers } from './use-managers'
-import { Task } from '@/lib/models/Task';
-import { TagManager } from '@/lib/firebase/client/tag-manager';
+import { Content } from 'next/font/google';
+import { Task } from '../types/gtd-items';
+import { getFirestore } from '@/lib/data-firebase/init';
+import { newItem } from '../sync';
+import { queryClient } from '../utils/queryClient';
+import { yjs } from '../data-yjs/init';
+
 
 // operations without auth
 const useTaskOperations = (userId : string) => {
-  console.log('Rendering tasks for user:', userId);
-  const { tasks } = useManagers();
-  const queryClient = useQueryClient();
-
-
-  // The query is still used for initial loading state and error handling
   const tasksQuery = useQuery({
     queryKey: ['tasks', userId],
-    queryFn: () => tasks.getTasks(userId),
-    // This prevents unnecessary fetching since we're using real-time updates
-    staleTime: Infinity
+    queryFn: async () => {
+      return new Array(yjs().get('tasks')?.entries());
+
+    //   const q = query(collection(getFirestore(), 'tasks'), where('userId', '==', userId), orderBy('createdAt', 'desc'));
+    //   const snapshot = await getDocs(q);
+    //   return snapshot.docs.map(doc => {
+    //     const data = doc.data();
+    //     if (data && data.content) {
+    //       return data as Task;
+    //     }
+    //     throw new Error('Invalid task data');
+    //  });
+    },
+    staleTime: Infinity,
   });
-
-  // Set up subscription to real-time updates
-  useEffect(() => {
-    // This is the only place where we reference the subscription
-    const unsubscribe = tasks.onTasksChanged(userId, (newTasks) => {
-      // When Firebase pushes new data, update React Query's cache
-      queryClient.setQueryData(['tasks', userId], newTasks);
-    });
-    
-    return () => unsubscribe();
-  }, [userId, queryClient, tasks]);
-
-  // fetch all tasks
-/*   const fetchTasks = async () => {
-    if (!userId) throw new Error("User not authenticated");
-    return tasks.getTasks(userId);
-  }; */
-
 
   // Add task mutation
   const addTask = useMutation({
-    mutationFn: (newTask: { content: string, tags? : string[] }) => {
-      return tasks.addTask(newTask.content, userId, newTask.tags);
+    mutationFn: async (newTask: { title: string, tags?: string[] }) => {
+      const taskItem = new Task(newTask.title, userId);
+      return await newItem(taskItem, "tasks");
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks', userId] });
+        queryClient.invalidateQueries({ queryKey: ['tasks', userId] });
     }
   });
 
   // Delete task mutation
   const deleteTask = useMutation({
-    mutationFn: (taskId: string) => {
-      return tasks.deleteTask(taskId, userId);
+    mutationFn: async (id: string) => {
+      return Promise.resolve(yjs().delete(id));
     },
     onMutate: async (taskId) => {
       // Cancel any outgoing refetches
@@ -68,16 +58,16 @@ const useTaskOperations = (userId : string) => {
       const previousTasks = queryClient.getQueryData(['tasks', userId]);
       
       // Optimistically update to remove the task
-      queryClient.setQueryData(['tasks', userId], (old = []) => 
-        (old as Task[]).filter(task => task.taskId !== taskId)
-      );
+    //   queryClient.setQueryData(['tasks', userId], (old = []) => 
+    //     (old as Task[]).filter(task => task.taskId !== taskId)
+    //   );
       
       return { previousTasks };
     },
     onError: (err, taskId, context) => {
       console.error('Error deleting task:', err);
       // Restore the previous state if there's an error
-      queryClient.setQueryData(['tasks', userId], context?.previousTasks);
+      //queryClient.setQueryData(['tasks', userId], context?.previousTasks);
     },
     onSettled: () => {
       // Refetch to ensure consistency
@@ -86,21 +76,22 @@ const useTaskOperations = (userId : string) => {
   });
   
   // Update task mutation
-  /* const updateMutation = useMutation({
-    mutationFn: ({ taskId, updates }: { taskId: string; updates: Partial<Task> }) => {
-      if (!userId) throw new Error("User not authenticated");
-      return tasks.updateTask(taskId, updates);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks', userId] });
-    }
-  }); */
+//   const updateMutation = useMutation({
+//     mutationFn: ({ taskId, updates }: { taskId: string; updates: Partial<Task> }) => {
+//       if (!userId) throw new Error("User not authenticated");
+//       return tasks.updateTask(taskId, updates);
+//     },
+//     onSuccess: () => {
+//       queryClient.invalidateQueries({ queryKey: ['tasks', userId] });
+//     }
+//   }); 
 
 
   const updateMutation = useMutation({
-    mutationFn: ({ taskId, updates }: { taskId: string; updates: Partial<Task> }) => {
+    mutationFn: async ({ taskId, updates }: { taskId: string; updates: Partial<Task> }) => {
       if (!userId) throw new Error("User not authenticated");
-      return tasks.updateTask(taskId, updates);
+      // Simulate an async operation or replace with actual implementation
+      return Promise.resolve(); // Replace with: return tasks.updateTask(taskId, updates);
     },
     onMutate: async ({ taskId, updates }) => {
       // Cancel any outgoing refetches
@@ -110,9 +101,9 @@ const useTaskOperations = (userId : string) => {
       const previousTasks = queryClient.getQueryData(['tasks', userId]);
       
       // Optimistically update the cache
-      queryClient.setQueryData<Task[] | undefined>(['tasks', userId], (old: Task[] | undefined) => 
-        old?.map((task: Task) => task.taskId === taskId ? { ...task, ...updates } : task)
-      );
+    //   queryClient.setQueryData<Task[] | undefined>(['tasks', userId], (old: Task[] | undefined) => 
+    //     old?.map((task: Task) => task.taskId === taskId ? { ...task, ...updates } : task)
+    //   );
       
       // Return a context with the previous value
       return { previousTasks };
@@ -150,3 +141,5 @@ const useTaskOperations = (userId : string) => {
 export const useTaskManagement = (userId: string) => {
   return useTaskOperations(userId);
 }
+
+

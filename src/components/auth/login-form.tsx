@@ -4,8 +4,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, RecaptchaVerifier } from 'firebase/auth';
-import { auth, getFirebaseAuth } from '../../lib/firebase/client/client-firebase';
-import { useRecaptcha } from '@/lib/query/hooks/use-recaptcha';
+import { getFirebaseAuth } from '@/lib/data-firebase/init';
+import { useRecaptcha } from '@/lib/hooks/use-recaptcha';
 
 
 export default function LoginForm() {
@@ -16,12 +16,8 @@ export default function LoginForm() {
 
   const { ready: recaptchaReady, executeRecaptcha } = useRecaptcha();
 
-  
-
   const handleEmailLogin = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
-
-
 
     try {
         const recaptchaToken = await executeRecaptcha('login');
@@ -32,7 +28,7 @@ export default function LoginForm() {
         const user = userCredential.user;
         
         if (!user) {
-        throw new Error('Authentication succeeded but no user was returned');
+          throw new Error('Authentication succeeded but no user was returned');
         }
         
         // Get ID token for server-side session
@@ -75,6 +71,14 @@ export default function LoginForm() {
     }
   };
   
+  if(!recaptchaReady) { 
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
   return (
     <div>
       {error && <div className="error">{error}</div>}

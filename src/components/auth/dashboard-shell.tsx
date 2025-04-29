@@ -3,30 +3,27 @@
 // components/ProtectedRoute.tsx
 import { useContext, useEffect } from 'react';
 import { useRouter } from 'next/navigation'; 
-import { AuthContext } from "../providers/firebase-auth-provider";
 import LoadingSpinner from "../ui/loading-spinner";
 import Image from "next/image";
 import Link from "next/link";
-import { useAuth, useSuspenseAuth } from '@/lib/query/hooks/use-auth';
-import { getFirebaseAuth } from '@/lib/firebase/client/client-firebase';
+import { useAuth, useSuspenseAuth } from '@/lib/hooks/use-auth';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { onAuthStateChanged } from 'firebase/auth';
-import { DecodedIdToken } from 'firebase-admin/auth';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { DecodedIdToken, UserRecord } from 'firebase-admin/auth';
 
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  user: DecodedIdToken;
+  //user: User | UserRecord | null;
   fallback?: React.ReactNode;
 }
 
 export default function DashboardShell({ 
-  children, user
+  children
 }: ProtectedRouteProps) {
   //const user = useAuthenticatedUser();
-  console.log("user", user);
+  //console.log("user", user);
     //const [user, loading, error] = useAuthState(getFirebaseAuth());
-    if (user) {
         return <div>
   
         {children}
@@ -102,9 +99,6 @@ export default function DashboardShell({
                     </a>
                   </footer>
   </div>;
-    } else {
-        return <div>login bro</div>;
-    }
 
 
   // useEffect(() => {

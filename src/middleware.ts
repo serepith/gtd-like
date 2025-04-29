@@ -5,14 +5,16 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
     // Check for Firebase session cookie
     const session = request.cookies.get('firebase-session')?.value;
+
+    //console.log("session", session);
   
-  // Check if the user is accessing a protected route and isn't authenticated
-  if (!session && !isPublicPath(request.nextUrl.pathname)) {
-    // Redirect them to login, but remember where they were trying to go
-    const url = new URL('/login', request.url);
-    url.searchParams.set('from', request.nextUrl.pathname);
-    return NextResponse.redirect(url);
-  }
+  // // Check if the user is accessing a protected route and isn't authenticated
+  // if (!session && !isPublicPath(request.nextUrl.pathname)) {
+  //   // Redirect them to login, but remember where they were trying to go
+  //   const url = new URL('/login', request.url);
+  //   url.searchParams.set('from', request.nextUrl.pathname);
+  //   return NextResponse.redirect(url);
+  // }
   
   return NextResponse.next(); // Proceed to the requested page
 }

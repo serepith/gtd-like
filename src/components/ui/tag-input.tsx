@@ -1,9 +1,9 @@
 // src/components/tag-input.tsx
-import { Tag } from '@/lib/models/Tag';
+//import { Tag } from '@/lib/types/Tag';
+import { Tag } from '@/lib/types/gtd-items';
 import React, { useState, KeyboardEvent, useRef, useEffect, useCallback } from 'react';
 import { useDebounce } from 'use-debounce';
-import { useTaskTags } from '@/lib/query/hooks/use-task-tags';
-import { useTagManagement } from '@/lib/query/hooks/use-tag-management';
+//import { useTagManagement } from '@/lib/hooks/use-tag-management';
 
 interface TagInputProps {
   userId: string;
@@ -23,7 +23,7 @@ const TagInput: React.FC<TagInputProps> = ({
   const [inputValue, setInputValue] = useState<string>('');
   const [debouncedValue] = useDebounce(inputValue, 300);
   const inputRef = useRef<HTMLInputElement>(null);
-  const { findTagsByPrefix } = useTagManagement(userId);
+  //const { findTagsByPrefix } = useTagManagement(userId);
   
   useEffect(() => {
     // Notify parent component when list of tags changes
@@ -38,15 +38,15 @@ const TagInput: React.FC<TagInputProps> = ({
     }
   };
 
-  useEffect(() => {
-    if (debouncedValue.length >= 2) {
-      // Only search when there are at least 2 characters
-      const matches = findTagsByPrefix(debouncedValue);
-      setSuggestions(matches);
-    } else {
-      setSuggestions([]);
-    }
-  }, [debouncedValue]);
+  // useEffect(() => {
+  //   if (debouncedValue.length >= 2) {
+  //     // Only search when there are at least 2 characters
+  //     const matches = findTagsByPrefix(debouncedValue);
+  //     setSuggestions(matches);
+  //   } else {
+  //     setSuggestions([]);
+  //   }
+  // }, [debouncedValue]);
 
   const removeTag = (indexToRemove: number) => {
     setEnteredTags(enteredTags.filter((_, index) => index !== indexToRemove));

@@ -1,9 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
-import { AuthContext, AuthContextType } from '../../../components/providers/firebase-auth-provider';
 import { redirect, useRouter } from 'next/navigation';
 import { User, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from 'firebase/auth';
-import { auth, getFirebaseAuth } from '@/lib/firebase/client/client-firebase';
-import router from 'next/router';
+import { getFirebaseAuth } from '@/lib/data-firebase/init';
 import { useQueryClient, useSuspenseQuery, UseSuspenseQueryResult } from '@tanstack/react-query';
 
 // Base hook for auth state access
@@ -16,7 +14,7 @@ import { useQueryClient, useSuspenseQuery, UseSuspenseQueryResult } from '@tanst
 //   return context as AuthContextType;
 // };
 
-import { AUTH_QUERY_KEY } from '../../../components/providers/query-provider';
+import { AUTH_QUERY_KEY } from '@/lib/utils/queryClient';
 
 class UnauthenticatedError extends Error {
   constructor() {
@@ -26,12 +24,13 @@ class UnauthenticatedError extends Error {
 }
 
 export function useAuth() {
-  return useSuspenseQuery<User | null>({
-    queryKey: AUTH_QUERY_KEY,
-    // queryFn only runs if cache is empty
-    queryFn: () => Promise.resolve(null), 
-    staleTime: Infinity,
-  });
+  const [user, setUser] = useState<User | null>(null);
+  
+  useEffect(() => {
+    return onAuthStateChanged(getFirebaseAuth(), setUser);
+  }, []);
+  
+  return user;
 }
 
 /**
@@ -55,7 +54,7 @@ export function useGuaranteedAuth(): User {
 
 // Enhanced hook that adds authentication actions
 export const useAuthActions = () => {
-  const { data: user } = useAuth();
+  const user = useAuth();
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -178,26 +177,25 @@ type AuthResult =
  * Uses Suspense for the initial load and real-time updates via a side effect.
  */
   export function useSuspenseAuth(): UseSuspenseQueryResult<User | null> {
-    const auth = getFirebaseAuth();
     const queryClient = useQueryClient();
     
     // Set up persistent listener for real-time updates
     useEffect(() => {
-      const unsubscribe = onAuthStateChanged(auth, (user: User | null) => {
+      const unsubscribe = onAuthStateChanged(getFirebaseAuth(), (user: User | null) => {
         // Update cache with latest user data
         queryClient.setQueryData(['auth'], user);
       });
       
       // Clean up subscription on unmount
       return unsubscribe;
-    }, [auth, queryClient]);
+    }, [getFirebaseAuth(), queryClient]);
     
     // Initial query to get the data and enable Suspense
     return useSuspenseQuery<User | null>({
       queryKey: ['auth'],
       queryFn: () => 
         new Promise<User | null>((resolve) => {
-          const unsubscribe = onAuthStateChanged(auth, (user) => {
+          const unsubscribe = onAuthStateChanged(getFirebaseAuth(), (user) => {
             resolve(user);
             unsubscribe(); // We only need one resolution for the initial value
           });
